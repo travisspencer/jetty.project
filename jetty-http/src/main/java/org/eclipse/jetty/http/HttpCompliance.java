@@ -82,7 +82,8 @@ public final class HttpCompliance
      * Builder based on obsolete <a href="https://tools.ietf.org/html/rfc2616">RFC 2616: HTTP/1.1</a>.
      * </p>
      *
-     * <table summary="RFC 2616 Defaults">
+     * <table>
+     * <caption>RFC 2616 Defaults</caption>
      * <thead>
      * <tr><td>Configurable</td><td>Default Value</td></tr>
      * </thead>
@@ -121,7 +122,8 @@ public final class HttpCompliance
      * Builder based on current <a href="https://tools.ietf.org/html/rfc7230">RFC 7230: HTTP/1.1</a>.
      * </p>
      *
-     * <table summary="RFC 7230 Defaults">
+     * <table>
+     * <caption>RFC 7230 Defaults</caption>
      * <thead>
      * <tr><td>Configurable</td><td>Default Value</td></tr>
      * </thead>
