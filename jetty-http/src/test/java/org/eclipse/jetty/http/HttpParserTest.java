@@ -18,14 +18,14 @@
 
 package org.eclipse.jetty.http;
 
-import static org.eclipse.jetty.http.HttpCompliance.Section.CASE_INSENSITIVE_FIELD_VALUE_CACHE;
-import static org.eclipse.jetty.http.HttpCompliance.Section.FIELD_COLON;
-import static org.eclipse.jetty.http.HttpCompliance.Section.FIELD_NAME_CASE_INSENSITIVE;
-import static org.eclipse.jetty.http.HttpCompliance.Section.METHOD_CASE_SENSITIVE;
-import static org.eclipse.jetty.http.HttpCompliance.Section.NO_FIELD_FOLDING;
-import static org.eclipse.jetty.http.HttpCompliance.Section.NO_HTTP_0_9;
-import static org.eclipse.jetty.http.HttpCompliance.Section.NO_WS_AFTER_FIELD_NAME;
-import static org.eclipse.jetty.http.HttpCompliance.Section.TRANSFER_ENCODING_WITH_CONTENT_LENGTH;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.CASE_INSENSITIVE_FIELD_VALUE_CACHE;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.FIELD_COLON;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.FIELD_NAME_CASE_INSENSITIVE;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.METHOD_CASE_SENSITIVE;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.NO_FIELD_FOLDING;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.NO_HTTP_0_9;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.NO_WS_AFTER_FIELD_NAME;
+import static org.eclipse.jetty.http.HttpParser.ViolationSection.TRANSFER_ENCODING_WITH_CONTENT_LENGTH;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -2291,7 +2291,7 @@ public class HttpParserTest
     private boolean _early;
     private boolean _headerCompleted;
     private boolean _messageCompleted;
-    private final List<HttpCompliance.Section> _complianceViolation = new ArrayList<>();
+    private final List<HttpParser.ComplianceViolation> _complianceViolation = new ArrayList<>();
     
     private class Handler implements HttpParser.RequestHandler, HttpParser.ResponseHandler, HttpParser.ComplianceHandler
     {
@@ -2401,7 +2401,7 @@ public class HttpParserTest
         }
 
         @Override
-        public void onComplianceViolation(HttpCompliance compliance, HttpCompliance.Section violation, String reason)
+        public void onComplianceViolation(HttpCompliance compliance, HttpParser.ComplianceViolation violation, String reason)
         {
             _complianceViolation.add(violation);
         }

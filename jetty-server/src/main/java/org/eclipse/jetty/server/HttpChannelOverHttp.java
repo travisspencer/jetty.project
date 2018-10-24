@@ -515,7 +515,7 @@ public class HttpChannelOverHttp extends HttpChannel implements HttpParser.Reque
     }
 
     @Override
-    public void onComplianceViolation(HttpCompliance compliance, HttpCompliance.Section violation, String reason)
+    public void onComplianceViolation(HttpCompliance compliance, HttpParser.ComplianceViolation violation, String reason)
     {
         if (_httpConnection.isRecordHttpComplianceViolations())
         {
@@ -524,7 +524,7 @@ public class HttpChannelOverHttp extends HttpChannel implements HttpParser.Reque
                 _complianceViolations = new ArrayList<>();
             }
             String record = String.format("%s (see %s) in mode %s for %s in %s", 
-                violation.getDescription(), violation.getURL(), compliance, reason, getHttpTransport());
+                violation.getDescription(), violation.getUrl(), compliance, reason, getHttpTransport());
             _complianceViolations.add(record);
             if (LOG.isDebugEnabled())
                 LOG.debug(record);

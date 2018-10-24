@@ -44,41 +44,6 @@ package org.eclipse.jetty.http;
 public final class HttpCompliance
 {
     /**
-     * Section Declarations, used for reporting Violations
-     */
-    public enum Section
-    {
-        CASE_INSENSITIVE_FIELD_VALUE_CACHE("", "Use case insensitive field value cache"),
-        METHOD_CASE_SENSITIVE("https://tools.ietf.org/html/rfc7230#section-3.1.1", "Method is case-sensitive"),
-        FIELD_COLON("https://tools.ietf.org/html/rfc7230#section-3.2", "Fields must have a Colon"),
-        FIELD_NAME_CASE_INSENSITIVE("https://tools.ietf.org/html/rfc7230#section-3.2", "Field name is case-insensitive"),
-        NO_WS_AFTER_FIELD_NAME("https://tools.ietf.org/html/rfc7230#section-3.2.4", "Whitespace not allowed after field name"),
-        NO_FIELD_FOLDING("https://tools.ietf.org/html/rfc7230#section-3.2.4", "No line Folding"),
-        NO_HTTP_0_9("https://tools.ietf.org/html/rfc7230#appendix-A.2", "No HTTP/0.9"),
-        TRANSFER_ENCODING_WITH_CONTENT_LENGTH("https://tools.ietf.org/html/rfc7230#section-3.3.1", "Transfer-Encoding and Content-Length"),
-        MULTIPLE_CONTENT_LENGTHS("https://tools.ietf.org/html/rfc7230#section-3.3.1", "Multiple Content-Lengths");
-
-        final String url;
-        final String description;
-
-        Section(String url, String description)
-        {
-            this.url = url;
-            this.description = description;
-        }
-
-        public String getDescription()
-        {
-            return description;
-        }
-
-        public String getURL()
-        {
-            return url;
-        }
-    }
-
-    /**
      * Request attribute name for storing encountered compliance violations
      */
     public static final String VIOLATIONS_ATTR = "org.eclipse.jetty.http.compliance.violations";
@@ -441,21 +406,4 @@ public final class HttpCompliance
             return this;
         }
     }
-
-//    TODO: Document Legacy compliance mode behavior in Jetty 9.x and older
-//    /** A Legacy compliance mode to match jetty's behavior prior to RFC2616 and RFC7230.
-//     */
-//    LEGACY(sectionsBySpec("0,METHOD_CASE_SENSITIVE")),
-//
-//    /** The legacy RFC2616 support, which incorrectly excludes
-//     * {@link HttpComplianceSection#METHOD_CASE_SENSITIVE},
-//     * {@link HttpComplianceSection#FIELD_COLON},
-//     * {@link HttpComplianceSection#TRANSFER_ENCODING_WITH_CONTENT_LENGTH},
-//     * {@link HttpComplianceSection#MULTIPLE_CONTENT_LENGTHS},
-//     */
-//    RFC2616_LEGACY(sectionsBySpec("RFC2616,-FIELD_COLON,-METHOD_CASE_SENSITIVE,-TRANSFER_ENCODING_WITH_CONTENT_LENGTH,-MULTIPLE_CONTENT_LENGTHS")),
-//
-//    /** Jetty's current RFC7230 support, which incorrectly excludes  {@link HttpComplianceSection#METHOD_CASE_SENSITIVE} */
-//    RFC7230_LEGACY(sectionsBySpec("RFC7230,-METHOD_CASE_SENSITIVE")),
-
 }
