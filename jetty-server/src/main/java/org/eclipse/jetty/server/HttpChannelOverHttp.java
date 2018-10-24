@@ -27,7 +27,6 @@ import java.util.List;
 import org.eclipse.jetty.http.BadMessageException;
 import org.eclipse.jetty.http.HostPortHttpField;
 import org.eclipse.jetty.http.HttpCompliance;
-import org.eclipse.jetty.http.HttpComplianceSection;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpGenerator;
@@ -516,7 +515,7 @@ public class HttpChannelOverHttp extends HttpChannel implements HttpParser.Reque
     }
 
     @Override
-    public void onComplianceViolation(HttpCompliance compliance, HttpComplianceSection violation, String reason)
+    public void onComplianceViolation(HttpCompliance compliance, HttpCompliance.Section violation, String reason)
     {
         if (_httpConnection.isRecordHttpComplianceViolations())
         {

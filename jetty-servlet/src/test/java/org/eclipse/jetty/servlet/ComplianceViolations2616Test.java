@@ -109,7 +109,7 @@ public class ComplianceViolations2616Test
 
         HttpConfiguration config = new HttpConfiguration();
         config.setSendServerVersion(false);
-        config.setHttpCompliance(HttpCompliance.RFC2616_LEGACY);
+        config.setHttpCompliance(HttpCompliance.rfc2616Builder().build());
 
         HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(config);
         httpConnectionFactory.setRecordHttpComplianceViolations(true);
