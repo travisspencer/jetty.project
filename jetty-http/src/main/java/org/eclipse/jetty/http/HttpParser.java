@@ -177,7 +177,7 @@ public class HttpParser
 
     static
     {
-        DEFAULT_COMPLIANCE = HttpCompliance.rfc7230Builder().build();
+        DEFAULT_COMPLIANCE = HttpCompliance.RFC7230();
 
         CACHE.put(new HttpField(HttpHeader.CONNECTION,HttpHeaderValue.CLOSE));
         CACHE.put(new HttpField(HttpHeader.CONNECTION,HttpHeaderValue.KEEP_ALIVE));

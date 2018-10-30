@@ -72,9 +72,19 @@ public final class HttpCompliance
      *
      * @return default HttpCompliance configuration of RFC7230 Strict
      */
-    public static HttpCompliance getDefault()
+    public static HttpCompliance RFC7230()
     {
         return HttpCompliance.rfc7230Builder().build();
+    }
+
+    /**
+     * Get the Default HttpCompliance of <a href="https://tools.ietf.org/html/rfc2616">RFC 2616: HTTP/1.1</a>
+     *
+     * @return default HttpCompliance configuration of RFC2616 Strict
+     */
+    public static HttpCompliance RFC2616()
+    {
+        return HttpCompliance.rfc2616Builder().build();
     }
 
     /**
