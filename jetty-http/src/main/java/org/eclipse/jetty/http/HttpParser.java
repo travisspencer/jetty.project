@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jetty.http.HttpTokens.EndOfContent;
+import org.eclipse.jetty.http.SpecComplianceListener.SpecReference;
 import org.eclipse.jetty.util.ArrayTernaryTrie;
 import org.eclipse.jetty.util.ArrayTrie;
 import org.eclipse.jetty.util.BufferUtil;
@@ -141,7 +142,7 @@ public class HttpParser
     private final HttpHandler _handler;
     private final RequestHandler _requestHandler;
     private final ResponseHandler _responseHandler;
-    private final ComplianceHandler _complianceHandler;
+    private final SpecComplianceListener _complianceListener;
     private final int _maxHeaderBytes;
     private final HttpCompliance _compliance;
     private HttpField _field;
@@ -276,7 +277,7 @@ public class HttpParser
         _responseHandler=responseHandler;
         _maxHeaderBytes=maxHeaderBytes;
         _compliance=compliance;
-        _complianceHandler=(ComplianceHandler)(_handler instanceof ComplianceHandler?_handler:null);
+        _complianceListener=(SpecComplianceListener) (_handler instanceof SpecComplianceListener?_handler:null);
     }
 
     /* ------------------------------------------------------------------------------- */
@@ -286,10 +287,10 @@ public class HttpParser
     }
 
     /* ------------------------------------------------------------------------------- */
-    private void reportViolation(ViolationSection complianceSection, String reason)
+    private void reportViolation(SpecReference specReference, String reason)
     {
-        if (_complianceHandler!=null)
-            _complianceHandler.onComplianceViolation(_compliance,complianceSection,reason);
+        if (_complianceListener!=null)
+            _complianceListener.onSpecComplianceViolation(specReference, reason);
     }
 
     /* ------------------------------------------------------------------------------- */
@@ -586,7 +587,7 @@ public class HttpParser
                                 if (method!=null)
                                 {
                                     if (!method.asString().equals(_methodString))
-                                        reportViolation(ViolationSection.METHOD_CASE_SENSITIVE, _methodString);
+                                        reportViolation(RFC7230SpecReference.METHOD_CASE_SENSITIVE, _methodString);
 
                                     _methodString = method.asString();
                                 }
@@ -717,7 +718,7 @@ public class HttpParser
                     
                         case LF:
                             // HTTP/0.9
-                            reportViolation(ViolationSection.NO_HTTP_0_9, "No request version present: HTTP/0.9 assumed");
+                            reportViolation(RFC7230SpecReference.NO_HTTP_0_9, "No request version present: HTTP/0.9 assumed");
 
                             if (!_compliance.allowHttp09())
                             {
@@ -807,7 +808,7 @@ public class HttpParser
                             else
                             {
                                 // HTTP/0.9
-                                reportViolation(ViolationSection.NO_HTTP_0_9, "No request version present: HTTP/0.9 assumed");
+                                reportViolation(RFC7230SpecReference.NO_HTTP_0_9, "No request version present: HTTP/0.9 assumed");
                                 if (!_compliance.allowHttp09())
                                 {
                                     throw new BadMessageException("HTTP/0.9 not supported");
@@ -923,19 +924,19 @@ public class HttpParser
                         {
                             if (!_compliance.allowMultipleContentLengths())
                             {
-                                String reason = ViolationSection.MULTIPLE_CONTENT_LENGTHS.description;
-                                reportViolation(ViolationSection.MULTIPLE_CONTENT_LENGTHS, reason);
+                                String reason = RFC7230SpecReference.MULTIPLE_CONTENT_LENGTHS.description;
+                                reportViolation(RFC7230SpecReference.MULTIPLE_CONTENT_LENGTHS, reason);
                                 throw new BadMessageException(HttpStatus.BAD_REQUEST_400, reason);
                             }
                             if (convertContentLength(_valueString)!=_contentLength)
-                                throw new BadMessageException(HttpStatus.BAD_REQUEST_400,ViolationSection.MULTIPLE_CONTENT_LENGTHS.description);
+                                throw new BadMessageException(HttpStatus.BAD_REQUEST_400, RFC7230SpecReference.MULTIPLE_CONTENT_LENGTHS.description);
                         }
                         _hasContentLength = true;
 
                         if (_endOfContent == EndOfContent.CHUNKED_CONTENT)
                         {
                             String reason = "Transfer-Encoding and Content-Length";
-                            reportViolation(ViolationSection.TRANSFER_ENCODING_WITH_CONTENT_LENGTH, reason);
+                            reportViolation(RFC7230SpecReference.TRANSFER_ENCODING_WITH_CONTENT_LENGTH, reason);
 
                             if (!_compliance.allowTransferEncodingWithContentLength())
                             {
@@ -957,7 +958,7 @@ public class HttpParser
                         if (_hasContentLength)
                         {
                             String reason = "Transfer-Encoding and Content-Length";
-                            reportViolation(ViolationSection.TRANSFER_ENCODING_WITH_CONTENT_LENGTH, reason);
+                            reportViolation(RFC7230SpecReference.TRANSFER_ENCODING_WITH_CONTENT_LENGTH, reason);
 
                             if (!_compliance.allowTransferEncodingWithContentLength())
                             {
@@ -1029,7 +1030,7 @@ public class HttpParser
                         }
                         else if (!_headerString.equals(_header.asString()))
                         {
-                            reportViolation(ViolationSection.FIELD_NAME_CASE_INSENSITIVE, _headerString);
+                            reportViolation(RFC7230SpecReference.FIELD_NAME_CASE_INSENSITIVE, _headerString);
                         }
                         _field = new HttpField(_header, fieldName, _valueString);
 
@@ -1101,7 +1102,7 @@ public class HttpParser
                         case SPACE:
                         case HTAB:
                         {
-                            reportViolation(ViolationSection.NO_FIELD_FOLDING, _headerString);
+                            reportViolation(RFC7230SpecReference.NO_FIELD_FOLDING, _headerString);
 
                             if (!_compliance.allowMultiLineFieldValue())
                             {
@@ -1228,7 +1229,7 @@ public class HttpParser
                                         String en = BufferUtil.toString(buffer,buffer.position()-1,n.length(),StandardCharsets.US_ASCII);
                                         if (!n.equals(en))
                                         {
-                                            reportViolation(ViolationSection.FIELD_NAME_CASE_INSENSITIVE, en);
+                                            reportViolation(RFC7230SpecReference.FIELD_NAME_CASE_INSENSITIVE, en);
                                             n = en;
                                             cached_field = new HttpField(cached_field.getHeader(),n,v);
                                         }
@@ -1239,7 +1240,7 @@ public class HttpParser
                                         String ev = BufferUtil.toString(buffer,buffer.position()+n.length()+1,v.length(),StandardCharsets.ISO_8859_1);
                                         if (!v.equals(ev))
                                         {
-                                            reportViolation(ViolationSection.CASE_INSENSITIVE_FIELD_VALUE_CACHE,ev+"!="+v);
+                                            reportViolation(RFC7230SpecReference.CASE_INSENSITIVE_FIELD_VALUE_CACHE,ev+"!="+v);
                                             v = ev;
                                             cached_field = new HttpField(cached_field.getHeader(),n,v);
                                         }
@@ -1301,7 +1302,7 @@ public class HttpParser
                     {
                         case SPACE:
                         case HTAB:
-                            reportViolation(ViolationSection.NO_WS_AFTER_FIELD_NAME, _headerString);
+                            reportViolation(RFC7230SpecReference.NO_WS_AFTER_FIELD_NAME, _headerString);
 
                             if (_compliance.allowWhitespaceAfterFieldName())
                             {
@@ -1327,7 +1328,7 @@ public class HttpParser
                             _valueString="";
                             _length=-1;
 
-                            reportViolation(ViolationSection.FIELD_COLON, _headerString);
+                            reportViolation(RFC7230SpecReference.FIELD_COLON, _headerString);
 
                             if (_compliance.requireColonAfterFieldName())
                             {
@@ -1361,7 +1362,7 @@ public class HttpParser
                             break; 
                             
                         case LF:
-                            reportViolation(ViolationSection.FIELD_COLON, _headerString);
+                            reportViolation(RFC7230SpecReference.FIELD_COLON, _headerString);
 
                             if (_compliance.requireColonAfterFieldName())
                             {
@@ -1963,14 +1964,6 @@ public class HttpParser
     }
 
     /* ------------------------------------------------------------------------------- */
-    /* ------------------------------------------------------------------------------- */
-    /* ------------------------------------------------------------------------------- */
-    public interface ComplianceHandler extends HttpHandler
-    {
-        void onComplianceViolation(HttpCompliance compliance, ComplianceViolation violation, String details);
-    }
-
-    /* ------------------------------------------------------------------------------- */
     @SuppressWarnings("serial")
     private static class IllegalCharacterException extends BadMessageException
     {
@@ -1982,17 +1975,10 @@ public class HttpParser
         }
     }
 
-    public interface ComplianceViolation
-    {
-        String getName();
-        String getDescription();
-        String getUrl();
-    }
-
     /**
      * Section Declarations, used for reporting Violations
      */
-    enum ViolationSection implements ComplianceViolation
+    enum RFC7230SpecReference implements SpecReference
     {
         CASE_INSENSITIVE_FIELD_VALUE_CACHE("", "Use case insensitive field value cache"),
         METHOD_CASE_SENSITIVE("https://tools.ietf.org/html/rfc7230#section-3.1.1", "Method is case-sensitive"),
@@ -2007,7 +1993,7 @@ public class HttpParser
         final String url;
         final String description;
 
-        ViolationSection(String url, String description)
+        RFC7230SpecReference(String url, String description)
         {
             this.url = url;
             this.description = description;

@@ -18,14 +18,14 @@
 
 package org.eclipse.jetty.http;
 
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.CASE_INSENSITIVE_FIELD_VALUE_CACHE;
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.FIELD_COLON;
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.FIELD_NAME_CASE_INSENSITIVE;
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.METHOD_CASE_SENSITIVE;
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.NO_FIELD_FOLDING;
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.NO_HTTP_0_9;
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.NO_WS_AFTER_FIELD_NAME;
-import static org.eclipse.jetty.http.HttpParser.ViolationSection.TRANSFER_ENCODING_WITH_CONTENT_LENGTH;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.CASE_INSENSITIVE_FIELD_VALUE_CACHE;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.FIELD_COLON;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.FIELD_NAME_CASE_INSENSITIVE;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.METHOD_CASE_SENSITIVE;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.NO_FIELD_FOLDING;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.NO_HTTP_0_9;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.NO_WS_AFTER_FIELD_NAME;
+import static org.eclipse.jetty.http.HttpParser.RFC7230SpecReference.TRANSFER_ENCODING_WITH_CONTENT_LENGTH;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jetty.http.HttpParser.State;
+import org.eclipse.jetty.http.SpecComplianceListener.SpecReference;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
@@ -2291,9 +2292,9 @@ public class HttpParserTest
     private boolean _early;
     private boolean _headerCompleted;
     private boolean _messageCompleted;
-    private final List<HttpParser.ComplianceViolation> _complianceViolation = new ArrayList<>();
+    private final List<SpecReference> _complianceViolation = new ArrayList<>();
     
-    private class Handler implements HttpParser.RequestHandler, HttpParser.ResponseHandler, HttpParser.ComplianceHandler
+    private class Handler implements HttpParser.RequestHandler, HttpParser.ResponseHandler, SpecComplianceListener
     {
         @Override
         public boolean content(ByteBuffer ref)
@@ -2401,9 +2402,9 @@ public class HttpParserTest
         }
 
         @Override
-        public void onComplianceViolation(HttpCompliance compliance, HttpParser.ComplianceViolation violation, String reason)
+        public void onSpecComplianceViolation(SpecReference specReference, String details)
         {
-            _complianceViolation.add(violation);
+            _complianceViolation.add(specReference);
         }
     }
 }
