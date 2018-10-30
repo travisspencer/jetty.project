@@ -1980,7 +1980,7 @@ public class HttpParser
      */
     enum RFC7230SpecReference implements SpecReference
     {
-        CASE_INSENSITIVE_FIELD_VALUE_CACHE("", "Use case insensitive field value cache"),
+        CASE_INSENSITIVE_FIELD_VALUE_CACHE("", "Use case insensitive field value cache"), // TODO: move out to HttpConfiguration proper
         METHOD_CASE_SENSITIVE("https://tools.ietf.org/html/rfc7230#section-3.1.1", "Method is case-sensitive"),
         FIELD_COLON("https://tools.ietf.org/html/rfc7230#section-3.2", "Fields must have a Colon"),
         FIELD_NAME_CASE_INSENSITIVE("https://tools.ietf.org/html/rfc7230#section-3.2", "Field name is case-insensitive"),
