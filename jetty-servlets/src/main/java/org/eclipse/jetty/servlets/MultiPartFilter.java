@@ -47,6 +47,8 @@ import javax.servlet.http.Part;
 
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http.MultiPartInputStreamParser;
+import org.eclipse.jetty.http.SpecComplianceListener;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.LazyList;
 import org.eclipse.jetty.util.MultiMap;
@@ -163,7 +165,7 @@ public class MultiPartFilter implements Filter
         }
 
         MultipartConfigElement config = new MultipartConfigElement(tempdir.getCanonicalPath(), _maxFileSize, _maxRequestSize, _fileOutputBuffer);
-        MultiPartInputStreamParser mpis = new MultiPartInputStreamParser(request.getInputStream(), content_type, config, tempdir);
+        MultiPartInputStreamParser mpis = new MultiPartInputStreamParser(request.getInputStream(), content_type, config, tempdir, null);
         mpis.setDeleteOnExit(_deleteFiles);
         mpis.setWriteFilesWithFilenames(_writeFilesWithFilenames);
         request.setAttribute(MULTIPART, mpis);

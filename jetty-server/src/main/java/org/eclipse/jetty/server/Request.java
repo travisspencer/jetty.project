@@ -573,7 +573,7 @@ public class Request implements HttpServletRequest
     }
 
     /* ------------------------------------------------------------ */
-    private SpecComplianceListener getSpecComplianceListener()
+    SpecComplianceListener getSpecComplianceListener()
     {
         if (_channel instanceof SpecComplianceListener)
             return (SpecComplianceListener) _channel;

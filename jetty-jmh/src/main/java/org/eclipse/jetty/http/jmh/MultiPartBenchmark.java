@@ -183,7 +183,7 @@ public class MultiPartBenchmark
                 
                 case "UTIL":
                 {
-                    MultiPartInputStreamParser parser = new MultiPartInputStreamParser(in, _contentType, config, outputDir.toFile());
+                    MultiPartInputStreamParser parser = new MultiPartInputStreamParser(in, _contentType, config, outputDir.toFile(), null);
                     if (parser.getParts().size() != _numSections)
                         throw new IllegalStateException("Incorrect Parsing");
                     for (Part p : parser.getParts())
@@ -251,7 +251,7 @@ public class MultiPartBenchmark
                     break;
                     case "UTIL":
                     {
-                        MultiPartInputStreamParser parser = new MultiPartInputStreamParser(in, multipartExpectations.contentType, config, outputDir.toFile());
+                        MultiPartInputStreamParser parser = new MultiPartInputStreamParser(in, multipartExpectations.contentType, config, outputDir.toFile(), null);
                         for (Part p : parser.getParts())
                         {
                             count += p.getSize();
