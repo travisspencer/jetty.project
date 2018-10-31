@@ -80,6 +80,7 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http.MultiPartFormDataCompliance;
+import org.eclipse.jetty.http.SpecComplianceListener;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.io.RuntimeIOException;
 import org.eclipse.jetty.http.pathmap.ServletPathSpec;
@@ -572,6 +573,20 @@ public class Request implements HttpServletRequest
     }
 
     /* ------------------------------------------------------------ */
+    private SpecComplianceListener getSpecComplianceListener()
+    {
+        if (_channel instanceof SpecComplianceListener)
+            return (SpecComplianceListener) _channel;
+
+        SpecComplianceListener listener = _channel.getConnector().getBean(SpecComplianceListener.class);
+        if (listener == null)
+        {
+            listener = _channel.getServer().getBean(SpecComplianceListener.class);
+        }
+        return listener;
+    }
+
+    /* ------------------------------------------------------------ */
     /**
      * Get Request Attribute.
      * <p>
@@ -597,6 +612,12 @@ public class Request implements HttpServletRequest
             if (HttpConnection.class.getName().equals(name) &&
                 _channel.getHttpTransport() instanceof HttpConnection)
                 return _channel.getHttpTransport();
+            if (SpecComplianceListener.class.getName().equals(name))
+            {
+                if (_channel instanceof SpecComplianceListener)
+                    return _channel;
+                return _channel.getServer().getAttribute(name);
+            }
         }
         return (_attributes == null)?null:_attributes.getAttribute(name);
     }
@@ -766,7 +787,7 @@ public class Request implements HttpServletRequest
         for (String c : metadata.getFields().getValuesList(HttpHeader.COOKIE))
         {
             if (_cookies == null)
-                _cookies = new Cookies(getHttpChannel().getHttpConfiguration().getCookieCompliance());
+                _cookies = new Cookies(getHttpChannel().getHttpConfiguration().getCookieCompliance(), getSpecComplianceListener());
             _cookies.addCookieField(c);
         }
 
@@ -2041,7 +2062,7 @@ public class Request implements HttpServletRequest
     public void setCookies(Cookie[] cookies)
     {
         if (_cookies == null)
-            _cookies = new Cookies(getHttpChannel().getHttpConfiguration().getCookieCompliance());
+            _cookies = new Cookies(getHttpChannel().getHttpConfiguration().getCookieCompliance(), getSpecComplianceListener());
         _cookies.setCookies(cookies);
     }
 

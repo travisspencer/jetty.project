@@ -31,10 +31,12 @@ public abstract class CookieCutter
     protected static final Logger LOG = Log.getLogger(CookieCutter.class);
 
     protected final CookieCompliance _compliance;
+    protected SpecComplianceListener _complianceListener;
 
-    protected CookieCutter(CookieCompliance compliance)
+    protected CookieCutter(CookieCompliance compliance, SpecComplianceListener complianceListener)
     {
         _compliance = compliance;
+        _complianceListener = complianceListener;
     }
 
     protected void parseFields(List<String> rawFields)
@@ -268,6 +270,7 @@ public abstract class CookieCutter
                             if (_compliance==CookieCompliance.RFC6265)
                             {
                                 // Ignore
+                                reportViolation(RFC6265SpecReference.NO_RESERVED_NAMES, name);
                             }
                             else if ("$path".equals(lowercaseName))
                             {
@@ -316,5 +319,41 @@ public abstract class CookieCutter
 
     protected abstract void addCookie(String cookieName, String cookieValue, String cookieDomain, String cookiePath, int cookieVersion, String cookieComment);
 
+    private void reportViolation(RFC6265SpecReference specReference, String reason)
+    {
+        if (_complianceListener != null)
+            _complianceListener.onSpecComplianceViolation(specReference, reason);
+    }
 
+    enum RFC6265SpecReference implements SpecComplianceListener.SpecReference
+    {
+        NO_RESERVED_NAMES("https://tools.ietf.org/html/rfc6265", "Reserved $Names no longer use '$' prefix");
+
+        final String url;
+        final String description;
+
+        RFC6265SpecReference(String url, String description)
+        {
+            this.url = url;
+            this.description = description;
+        }
+
+        @Override
+        public String getDescription()
+        {
+            return description;
+        }
+
+        @Override
+        public String getUrl()
+        {
+            return url;
+        }
+
+        @Override
+        public String getName()
+        {
+            return name();
+        }
+    }
 }
