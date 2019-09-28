@@ -158,9 +158,9 @@ public class OpenIdCredentials implements Serializable
         if (sections.length != 3)
             throw new IllegalArgumentException("JWT does not contain 3 sections");
 
-        Base64.Decoder decoder = Base64.getDecoder();
-        String jwtHeaderString = new String(decoder.decode(sections[0]), StandardCharsets.UTF_8);
-        String jwtClaimString = new String(decoder.decode(sections[1]), StandardCharsets.UTF_8);
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String jwtHeaderString = new String(decoder.decode(padJWTSection(sections[0])), StandardCharsets.UTF_8);
+        String jwtClaimString = new String(decoder.decode(padJWTSection(sections[1])), StandardCharsets.UTF_8);
         String jwtSignature = sections[2];
 
         Map<String, Object> jwtHeader = (Map)JSON.parse(jwtHeaderString);
@@ -173,6 +173,28 @@ public class OpenIdCredentials implements Serializable
             LOG.debug("JWT signature not validated {}", jwtSignature);
 
         return (Map)JSON.parse(jwtClaimString);
+    }
+
+    private static byte[] padJWTSection(String unpaddedEncodedJwtSection)
+    {
+        int length = unpaddedEncodedJwtSection.length();
+        int paddingNeeded = length % 4;
+        byte[] bytes;
+
+        if (paddingNeeded > 0)
+        {
+            byte[] padding = { '=', '=', '=' };
+            bytes = new byte[length + paddingNeeded];
+
+            System.arraycopy(unpaddedEncodedJwtSection.getBytes(), 0, bytes, 0, length);
+            System.arraycopy(padding, 0, bytes, length, paddingNeeded);
+        }
+        else
+        {
+            bytes = unpaddedEncodedJwtSection.getBytes();
+        }
+
+        return bytes;
     }
 
     private Map<String, Object> claimAuthCode(String authCode) throws IOException
