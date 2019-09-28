@@ -3,6 +3,8 @@
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
   <New id="OpenIdConfiguration" class="org.eclipse.jetty.security.openid.OpenIdConfiguration">
     <Arg><Property name="jetty.openid.openIdProvider"/></Arg>
+    <Arg><Property name="jetty.openid.openIdProvider.authorizationEndpoint"/></Arg>
+    <Arg><Property name="jetty.openid.openIdProvider.tokenEndpoint"/></Arg>
     <Arg><Property name="jetty.openid.clientId"/></Arg>
     <Arg><Property name="jetty.openid.clientSecret"/></Arg>
     <Call name="addScopes">

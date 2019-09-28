@@ -18,8 +18,14 @@ etc/openid-baseloginservice.xml
 etc/jetty-openid.xml
 
 [ini-template]
-## The OpenID Identity Provider
-# jetty.openid.openIdProvider=https://accounts.google.com/
+## The OpenID Identity Provider's issuer ID (the entire URL *before* ".well-known/openid-configuration")
+# jetty.openid.openIdProvider=https://id.example.com/~
+
+## The OpenID Identity Provider's authorization endpoint (optional if the metadata of the OP is accessible)
+# jetty.openid.openIdProvider=https://id.example.com/authorization
+
+## The OpenID Identity Provider's token endpoint (optional if the metadata of the OP is accessible)
+# jetty.openid.openIdProvider=https://id.example.com/token
 
 ## The Client Identifier
 # jetty.openid.clientId=test1234.apps.googleusercontent.com
