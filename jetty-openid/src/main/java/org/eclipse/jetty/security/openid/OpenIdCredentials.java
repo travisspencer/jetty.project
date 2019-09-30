@@ -195,11 +195,12 @@ public class OpenIdCredentials implements Serializable
     private static byte[] padJWTSection(String unpaddedEncodedJwtSection)
     {
         int length = unpaddedEncodedJwtSection.length();
-        int paddingNeeded = length % 4;
+        int remainder = length % 4;
         byte[] bytes;
 
-        if (paddingNeeded > 0)
+        if (remainder > 0)
         {
+            int paddingNeeded = 4 - remainder;
             byte[] padding = { '=', '=', '=' };
             bytes = new byte[length + paddingNeeded];
 
