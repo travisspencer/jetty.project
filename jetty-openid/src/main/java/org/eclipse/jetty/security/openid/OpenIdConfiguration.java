@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ajax.JSON;
@@ -90,6 +91,9 @@ public class OpenIdConfiguration implements Serializable
             this.tokenEndpoint = (String)discoveryDocument.get("token_endpoint");
             if (this.tokenEndpoint == null)
                 throw new IllegalArgumentException("token_endpoint");
+
+            if (!Objects.equals(discoveryDocument.get("issuer"), provider))
+                LOG.warn("The provider in the metadata is not correct.");
         }
         else
         {
